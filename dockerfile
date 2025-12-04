@@ -1,19 +1,30 @@
 # Use an official Python runtime as a parent image
-FROM python:3.8-slim
+FROM python:3.12-slim
 
-# Set the working directory in the container
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libssl-dev \
+    libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN pip install --upgrade pip setuptools wheel
+
+# Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
+# Copy project files
 COPY . /app
 
-# Install any needed packages specified in requirements.txt
+# Install required Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 5000 available to the world outside this container
+# Expose port
 EXPOSE 5000
 
-# Define environment variable
+# Set env
 ENV FLASK_APP=app.py
 
 # Run the Flask app
